@@ -1,8 +1,8 @@
-# Smart Assistant
+# Computer
 
 ## Descrizione
-Smart Assistant è un prototipo di assistente vocale (tipo Google Home o Alexa) costruito con le moderne tecniche di Agentic AI.
-L'agente è stato costruito con la libreria Langgraph, il grafo che ne descrive il flusso è mostrato nella seguente immagine:
+Computer è un prototipo di assistente vocale (tipo Google Home o Alexa) costruito con le moderne tecniche di Agentic AI.
+L'agente è stato costruito con la libreria [Langgraph](https://langchain-ai.github.io/langgraph/), il grafo che ne descrive il flusso è mostrato nella seguente immagine:
 
 ![graph](graph.png "Grafo che descrive il flusso dell'agente")
 
