@@ -7,7 +7,7 @@ def init_engine():
 
 def say(s):
     engine.say(s)
-    engine.runAndWait() # In here the program will wait as if is in main file
+    engine.runAndWait()
 
 engine = init_engine()
 say(str(sys.argv[1]))

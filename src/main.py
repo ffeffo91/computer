@@ -11,14 +11,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# create data folder if not exists
 os.makedirs('data', exist_ok=True)
 os.makedirs('artifacts', exist_ok=True)
 
-model = ChatOpenAI(
-    # api_key=os.getenv("OPENAI_API_KEY"),
-    model="gpt-4"
-)
+model = ChatOpenAI(model="gpt-4")
 
 agent = SmartAssistant(
     model=model,
