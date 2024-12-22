@@ -43,7 +43,7 @@ Per tradurre in audio la risposta dell'LLM.
 4. LLM ([Large Language Model - ChatGPT](https://platform.openai.com/docs/api-reference/introduction)):
 E' l'intelligenza artificiale in grado di utilizzare i tool a disposizione per risolvere le richieste dell'utente.
 
-## Improvement
+## Futuri Miglioramenti
 - Integrazione di un wake-word model per attivare il sistema tramite un preciso comando vocale (come "Alexa!", "Eih Siri!", "Ok Google!")
 - Emancipazione dell'API di ChatGPT per passare ad un modello opensource, i risultati più promettenti sono stati ottenuti con [Qwen-14B](https://github.com/QwenLM/Qwen2.5-Coder), che nella sua versione quantizzata, in 16Gb di GPU, dimostra capacità di Agent perfettamente paragonabili a ChatGPT4 per questo sistema
 - Integrazione di tool più funzionali ad un assistente vocale, come ad esempio il collegamento a Spotify.
