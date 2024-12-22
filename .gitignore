@@ -1,8 +1,6 @@
 *.pyc
-models/*
-notebooks/*
 .vscode/*
 artifacts/*
 .env
-checkpoint.db
-audio.wav
+data
+__pycache__

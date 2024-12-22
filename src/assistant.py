@@ -1,21 +1,17 @@
 import operator
-import yaml
 import sqlite3
 import pandas as pd
 from subprocess import call
-from dotenv import load_dotenv
 from typing import TypedDict, Annotated, List, Callable
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import AnyMessage, HumanMessage, SystemMessage
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
 from langgraph.checkpoint.sqlite import SqliteSaver
-from recorders import AudioRecorder
+from recorder import AudioRecorder
 import os
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-
-load_dotenv()
 
 class AgentState(TypedDict):
     messages: Annotated[list[AnyMessage], operator.add]
@@ -23,37 +19,30 @@ class AgentState(TypedDict):
 class SmartAssistant:
     def __init__(
         self,
-        config_path: str,
         model: ChatOpenAI,
         tools: List[Callable],
         db_uri: str
     ):
-        config = self.load_config(config_path)
         self.model = model
         self.tools = tools
-        self.soul = self.load_soul(config['soul_file_path'])
+        self.system_prompt = self.load_system_prompt("configs/system_prompt.txt")
         self.recorder = AudioRecorder()
         self.db_uri = db_uri
         self.checkpointer = None
         self.load_checkpointer()
         self.agent = self.create_agent()
-
-    def load_config(self, config_path):
-        with open(config_path, 'r') as file:
-            config = yaml.safe_load(file)
-        return config
     
     def load_checkpointer(self):
-        with SqliteSaver.from_conn_string(self.db_uri) as sqlite_checkpointer:
-            self.checkpointer = sqlite_checkpointer
+        conn = sqlite3.connect(self.db_uri, check_same_thread=False)
+        self.checkpointer = SqliteSaver(conn)
     
-    def load_soul(self, soul_file_path):
+    def load_system_prompt(self, soul_file_path):
         with open(soul_file_path, "r") as file:
             soul = file.read()
         return soul
     
     def talk(self, text):
-        call(["python", "speak.py", text])
+        call(["python", "src/speak.py", text])
 
     def llm_node(
         self,
@@ -61,7 +50,7 @@ class SmartAssistant:
     ):
         model_with_tools = self.model.bind_tools(self.tools)
         messages = state['messages']
-        messages = [SystemMessage(content=self.soul)] + messages
+        messages = [SystemMessage(content=self.system_prompt)] + messages
         message = model_with_tools.invoke(messages)
         talk_message = message.copy()
         talk_message.content = message.content if not message.content.endswith('FINE') else message.content[:-4]
@@ -80,7 +69,6 @@ class SmartAssistant:
 
     def human_node(self, state: AgentState):
         request = self.recorder.listen()
-        # request = input('listening: ')
         message = HumanMessage(content=request)
         message.pretty_print()
         return {'messages': [message]}
@@ -110,28 +98,12 @@ class SmartAssistant:
         return agent
     
     def run(self):
-        conn = sqlite3.connect(self.db_uri)
-        df = pd.read_sql_query("SELECT thread_id FROM checkpoints", conn)
-        last_id = df['thread_id'].astype(int).max()
+        conn = sqlite3.connect(self.db_uri, check_same_thread=False)
+        try:
+            df = pd.read_sql_query("SELECT thread_id FROM checkpoints", conn)
+            last_id = df['thread_id'].astype(int).max()
+        except:
+            last_id = 0
         new_id = f"{last_id+1:05}"
         config = {"configurable": {"thread_id": new_id}}
         self.agent.invoke({'messages': []}, config=config)
-
-if __name__ == "__main__":
-    from tools import (
-        add_shopping_list,
-        leggi_oroscopo,
-        invia_messaggio,
-        read_shopping_list
-    )
-    model = ChatOpenAI(
-        api_key=os.getenv("OPENAI_API_KEY"),
-        model="gpt-4"
-    )
-    agent = SmartAssistant(
-        config_path='configs/config.yaml',
-        model=model,
-        tools=[add_shopping_list, leggi_oroscopo, invia_messaggio, read_shopping_list],
-        db_uri='checkpoint.db'
-    )
-    agent.run()

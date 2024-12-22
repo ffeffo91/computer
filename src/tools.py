@@ -3,6 +3,7 @@ from langchain.tools import tool
 from typing import Literal
 import requests
 from bs4 import BeautifulSoup
+from langchain_community.tools import TavilySearchResults
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -87,5 +88,7 @@ def read_shopping_list():
     with open('artifacts/shopping_list.txt', "r") as file:
         lista = file.read()
     return lista
+
+search_tool = TavilySearchResults(max_results=5)
 
 
