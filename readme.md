@@ -1,20 +1,28 @@
 # Computer
 
 ## Descrizione
-Computer è un prototipo di assistente vocale (tipo Google Home o Alexa) costruito con le moderne tecniche di Agentic AI.
+**Computer** è un prototipo di assistente vocale (tipo Google Home o Alexa) costruito con le moderne tecniche di Agentic AI.
 L'agente è stato costruito con la libreria [Langgraph](https://langchain-ai.github.io/langgraph/), il grafo che ne descrive il flusso è mostrato nella seguente immagine:
 
 ![graph](graph.png "Grafo che descrive il flusso dell'agente")
 
+## Tools
+L'agente è in grado di utilizzare i seguenti tool:
+1. Ricerca sul web grazie all'API [Tavily](https://tavily.com/)
+2. Aggiungere elementi alla lista della spesa
+3. Leggere l'attuale lista della spesa
+4. Fornire l'oroscopo, che viene letto tramite web scraping dal sito del [https://www.corriere.it/oroscopo/oggi/](https://www.corriere.it/oroscopo/oggi/)
+Questi tool sono stati creati a puro scopo sperimentale, per testare le potenziali capacità di un sistema di questo tipo.
+
 ## Modelli
 Il progetto comprende l'integrazione di diversi modelli di AI:
-1. VAD ([Voice Activity Detector](https://github.com/snakers4/silero-vad)):
+1. VAD ([Voice Activity Detector - Silero VAD](https://github.com/snakers4/silero-vad)):
 Questo modello permette di individuare l'attività vocale, è fondamentale per capire quando l'utente ha iniziato a parlare.
-2. STT ([Speech To Text](https://github.com/SYSTRAN/faster-whisper)):
+2. STT ([Speech To Text - Faster Whisper](https://github.com/SYSTRAN/faster-whisper)):
 Per tradurre in testo la voce registrata.
-3. TTS ([Text To Speech](https://pypi.org/project/pyttsx3/)):
+3. TTS ([Text To Speech - Pyttsx3](https://pypi.org/project/pyttsx3/)):
 Per tradurre in audio la risposta dell'LLM.
-4. LLM ([Large Language Model](https://platform.openai.com/docs/api-reference/introduction)):
+4. LLM ([Large Language Model - ChatGPT](https://platform.openai.com/docs/api-reference/introduction)):
 E' l'intelligenza artificiale in grado di utilizzare i tool a disposizione per risolvere le richieste dell'utente.
 
 ## Inizializzazione
@@ -27,3 +35,16 @@ pip install -r requirements.txt
 OPENAI_API_KEY="openai-key"
 TAVILY_API_KEY="tavily-key"
 ```
+3. potrebbe essere necessario installare ffmpeg:
+- windows: si suggerisce questa [guida](https://phoenixnap.com/kb/ffmpeg-windows)
+- linux: si suggerisce questa [guida](https://phoenixnap.com/kb/install-ffmpeg-ubuntu)
+4. Avviare con il comando:
+```bash
+python src/main.py
+```
+
+## Improvement
+- Integrazione di un wake-word model per attivare il sistema tramite un preciso comando vocale (come "Alexa!", "Eih Siri!", "Ok Google!")
+- Emancipazione dell'API di ChatGPT per passare ad un modello opensource, i risultati più promettenti sono stati ottenuti con [Qwen-14B](https://github.com/QwenLM/Qwen2.5-Coder), che nella sua versione quantizzata, in 16Gb di GPU, dimostra capacità di Agent perfettamente paragonabili a ChatGPT4 per questo sistema
+- Integrazione di tool più funzionali ad un assistente vocale, come ad esempio il collegamento a Spotify.
+- Creazione di un'interfaccia a frontend.
